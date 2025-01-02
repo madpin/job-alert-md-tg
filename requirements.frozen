@@ -4,7 +4,6 @@
 #
 #    pip-compile --output-file=/Users/tpinto/madpin/job-alert-md-tg///requirements.frozen /Users/tpinto/madpin/job-alert-md-tg///requirements.in
 #
---index-url https://nexus.corp.indeed.com/repository/pypi/simple
 
 annotated-types==0.7.0
     # via pydantic
