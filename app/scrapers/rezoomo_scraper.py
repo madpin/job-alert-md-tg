@@ -35,9 +35,11 @@ class RezoomoScraper(BaseScraper):
 
             # Extract all text content from the job listing
             job_listing_content = []
-            
+
             # Extract job details from window.initData
-            script_tag = soup.find('script', string=lambda text: text and 'window.initData' in text)
+            script_tag = soup.find(
+                "script", string=lambda text: text and "window.initData" in text
+            )
             if script_tag:
                 # Extract relevant job information from the script
                 # This would need parsing of the JavaScript object
@@ -52,11 +54,17 @@ class RezoomoScraper(BaseScraper):
 
                 for job_block in job_blocks:
                     # Extract job details
-                    date = job_block.find("div", class_="date-field").get_text(strip=True)
+                    date = job_block.find("div", class_="date-field").get_text(
+                        strip=True
+                    )
                     title = job_block.find("p", class_="jobTitle").get_text(strip=True)
-                    location = job_block.find("i", class_="fa-map-marker-alt").parent.get_text(strip=True)
-                    job_type = job_block.find("i", class_="fa-clock").parent.get_text(strip=True)
-                    
+                    location = job_block.find(
+                        "i", class_="fa-map-marker-alt"
+                    ).parent.get_text(strip=True)
+                    job_type = job_block.find("i", class_="fa-clock").parent.get_text(
+                        strip=True
+                    )
+
                     # Combine job details
                     job_info = f"{date} | {title} | {location} | {job_type}"
                     job_listing_content.append(job_info)
@@ -69,8 +77,10 @@ class RezoomoScraper(BaseScraper):
         except Exception as e:
             print(f"Error parsing content: {e}")
             return ""
+
     def take_screenshot(self, url: str, screenshot_path: str) -> None:
         """Takes a screenshot of the given URL.
+
 
         Args:
             url: The URL to take a screenshot of.
@@ -80,19 +90,36 @@ class RezoomoScraper(BaseScraper):
             response = requests.get(url, timeout=10)
             response.raise_for_status()
             soup = BeautifulSoup(response.content, "html.parser")
-            
+
             # Find the h2 element by its text content
-            job_listing_h2 = soup.find('h2', string='Job listing')
+            job_listing_h2 = soup.find("h2", string="Job listing")
             if job_listing_h2:
                 # Get the parent div
-                parent_div = job_listing_h2.find_parent('div')
+                parent_div = job_listing_h2.find_parent("div")
 
                 if parent_div:
                     # Get the div selector by combining class names or other attributes
                     div_selector = f"div.{' '.join(parent_div.get('class', []))}"
                     take_screenshot(url, screenshot_path, div_selector)
+                else:
+                    print(
+                        f"Could not find parent div for job listing h2 element at URL: {url}"
+                    )
+                    take_screenshot(url, screenshot_path)
+            else:
+                print(
+                    f"Could not find h2 element with text 'Job listing' at URL: {url}"
+                )
+                take_screenshot(url, screenshot_path)
+        except requests.exceptions.RequestException as e:
+            print(f"Network error while accessing {url}: {str(e)}")
         except Exception as e:
-            print(f"Error finding element or taking screenshot: {e}")
+            print(
+                f"Unexpected error while processing {url} for screenshot at {screenshot_path}: {str(e)}"
+            )
+            print(f"Error type: {type(e).__name__}")
+
+
 # Performance characteristics:
 # - Depends on the network speed and the complexity of the webpage.
 # - BeautifulSoup parsing can be optimized further for specific HTML structures.
