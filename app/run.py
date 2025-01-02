@@ -3,6 +3,12 @@
 
 # Add future imports here if needed
 from __future__ import annotations
+import datetime
+import os
+import platform
+import sys
+
+import psutil
 
 # Set encode as utf-8
 # -*- coding: utf-8 -*-
@@ -73,6 +79,28 @@ def populate_initial_data():
 
 def main():
     """Main entry point for the application."""
+
+    current_time = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    user = os.getenv("USER", os.getenv("USERNAME", "unknown"))
+    system_info = platform.uname()
+
+    print(f"""
+=== Application Start Log ===
+Timestamp: {current_time}
+User: {user}
+Process ID: {os.getpid()}
+Working Directory: {os.getcwd()}
+Python Version: {platform.python_version()}
+System: {system_info.system}
+Node: {system_info.node}
+Release: {system_info.release}
+Version: {system_info.version}
+Machine: {system_info.machine}
+CPU Count: {os.cpu_count()}
+Memory Info: {psutil.virtual_memory() if 'psutil' in sys.modules else 'psutil not available'}
+========================
+""")
+
     create_tables()
     populate_initial_data()
     run_monitoring()
