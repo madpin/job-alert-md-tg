@@ -1,0 +1,7 @@
+playwright
+python-telegram-bot
+SQLAlchemy
+pydantic[dotenv]
+requests
+beautifulsoup4
+pydantic-settings

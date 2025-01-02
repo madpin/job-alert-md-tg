@@ -1,0 +1,10 @@
+services:
+  job-monitor:
+    build: .
+    container_name: job_monitor_app
+    volumes:
+      - ./app:/app/app
+      - ./screenshots:/app/screenshots
+    env_file:
+      - .env
+    command: python app/run.py
